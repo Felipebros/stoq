@@ -419,6 +419,13 @@ _details = [
         int, initial=0, range=(0, 22)),
 
     ParameterDetails(
+        u'INCLUDE_CASH_FUND_ON_TILL_CLOSING',
+        _(u'Till'),
+        _(u'Include cash fund on till closing'),
+        _(u'Makes stoq expects to include the cash fund on till closing'),
+        bool, initial=False),
+
+    ParameterDetails(
         u'TILL_BLIND_CLOSING',
         _('Till'),
         _('Use blind closing for till'),
@@ -1067,6 +1074,21 @@ _details = [
         _(u'Show full time of the sale on receivable payments'),
         _(u'Beyond date, display exactly the hour and minute of the sale on the '
           u'receivable payments list.'),
+        bool, initial=False),
+
+    ParameterDetails(
+        'REQUIRE_PRODUCT_BRANCH_OVERRIDE',
+        _('POS'),
+        _('Require override for products in mobile pos'),
+        _('When this is true, only products that have an override for the selected branch will be '
+          'available for sale in a given branch'),
+        bool, initial=False),
+
+    ParameterDetails(
+        'ALLOW_NEGATIVE_STOCK',
+        _('Stock'),
+        _('Enable negative stock'),
+        _('When this is true, allow to decrease stock even if it becames negative.'),
         bool, initial=False),
 ]
 

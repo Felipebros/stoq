@@ -400,6 +400,25 @@ class Person(Domain):
                   LeftJoin(Company, Person.id == Company.person_id)]
         return store.using(*tables).find(Person, query).one()
 
+    @classmethod
+    def get_or_create_by_document(cls, store, document, **kwargs):
+        """
+        If there is not a person with the document, create one and return it
+
+        :param store: a database store
+        :param document: a document can be a formatted cpf or cnpj
+        """
+        person = cls.get_by_document(store, document)
+        if person is not None:
+            return person
+
+        person = cls(store=store, **kwargs)
+        if len(raw_document(document)) == 11:
+            Individual(store=store, cpf=document, person=person)
+        elif len(raw_document(document)) == 14:
+            Company(store=store, cnpj=document, person=person)
+        return person
+
     #
     # Acessors
     #
@@ -1711,6 +1730,10 @@ class Branch(Domain):
     #: the |certificate| this branch should use
     certificate = Reference(certificate_id, Certificate.id)
 
+    #: the default client category this branch should use
+    default_client_category_id = IdCol()
+    default_client_category = Reference(default_client_category_id, 'ClientCategory.id')
+
     #
     # IActive
     #
@@ -1739,6 +1762,13 @@ class Branch(Domain):
     #
     # Public API
     #
+
+    def get_accountants(self):
+        tables = [Employee, Join(EmployeeRole, EmployeeRole.id == Employee.role_id)]
+        query = And(Employee.branch_id == self.id, EmployeeRole.name == 'Contador')
+
+        employees = list(self.store.using(*tables).find(Employee, query))
+        return employees
 
     def merge_with(self, other, copy_empty_values=True):
         # We cannot merge branches right now, since identifiers should be unique

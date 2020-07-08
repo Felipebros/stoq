@@ -93,6 +93,7 @@ from storm.expr import (And, Eq, LeftJoin, Alias, Sum, Coalesce, Select, Join,
                         Cast, Or, In)
 from zope.interface import implementer
 
+from stoqlib.api import api
 from stoqlib.database.expr import (Field, TransactionTimestamp,
                                    ArrayAgg, Contains, IsContainedBy,
                                    SplitPart)
@@ -313,6 +314,9 @@ class Product(Domain):
     #: Brazil specific. NFE. Código Especificador da Substituição Tributária
     cest = UnicodeCol(default=None)
 
+    #: Brazil specific. NFE. Código Benefício Fiscal
+    c_benef = UnicodeCol(default=None)
+
     #: NFE: see ncm
     ex_tipi = UnicodeCol(default=None)
 
@@ -506,6 +510,16 @@ class Product(Domain):
             return override.cofins_template or self._cofins_template
         return self._cofins_template
 
+    def get_cbenef(self, branch):
+        """Returns the cbnef that should be used for this product
+
+        :param branch: the branch that will be selling this product.
+        """
+        override = ProductBranchOverride.find_product(branch, self)
+        if override and override.c_benef:
+            return override.c_benef
+        return self.c_benef
+
     def set_cofins_template(self, value):
         """Sets the cofins template for this product"""
         self._cofins_template = value
@@ -599,7 +613,7 @@ class Product(Domain):
         """Closes the product's children
         """
         for child in self.children:
-            child.sellable.close()
+            child.sellable.close(api.get_current_branch(self.store))
 
     def get_manufacture_time(self, quantity, branch):
         """Returns the estimated time in days to manufacture a product
@@ -1391,7 +1405,8 @@ class Storable(Domain):
             raise ValueError(u"branch cannot be None")
 
         stock_item = self.get_stock_item(branch, batch)
-        if stock_item is None or quantity > stock_item.quantity:
+        if ((stock_item is None or quantity > stock_item.quantity)
+                and not sysparam.get_bool('ALLOW_NEGATIVE_STOCK')):
             raise StockError(
                 _('Quantity to decrease is greater than the available stock.'))
 

@@ -92,6 +92,7 @@ class _TillClosingModel(object):
     def __init__(self, till, value):
         self.till = till
         self.value = value
+        self.observations = ''
 
     def get_opening_date(self):
         # self.till is None only in the special case that the user added the ECF
@@ -234,7 +235,7 @@ class TillClosingEditor(BaseEditor):
             self.day_history_box.pack_start(summary_day_history, False, True, 0)
         else:
             self.totals_grid.hide()
-            self.day_history.add_list(self.till.get_day_summary())
+            self.day_history.add_list(self.till.create_day_summary())
 
     def _get_day_history(self):
         if not self.till:

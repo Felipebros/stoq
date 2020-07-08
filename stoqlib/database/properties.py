@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
 # vi:si:et:sw=4:sts=4:ts=4
-##
-## Copyright (C) 2008-2013 Async Open Source <http://www.async.com.br>
-## All rights reserved
-##
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
-## (at your option) any later version.
-##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc., or visit: http://www.gnu.org/.
-##
-## Author(s): Stoq Team <stoq-devel@async.com.br>
-##
+#
+# Copyright (C) 2008-2020 Async Open Source <http://www.async.com.br>
+# All rights reserved
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., or visit: http://www.gnu.org/.
+#
+# Author(s): Stoq Team <stoq-devel@async.com.br>
+#
 
 import datetime
 import decimal
@@ -29,7 +29,7 @@ import json
 
 from kiwi.currency import currency
 
-from storm.properties import RawStr, Int, Bool, DateTime, Decimal, Unicode
+from storm.properties import Bool, DateTime, Decimal, Int, List, RawStr, Time, Unicode
 from storm.properties import SimpleProperty
 from storm.store import AutoReload
 from storm.variables import (DateVariable, DateTimeVariable,
@@ -51,6 +51,7 @@ class Identifier(int):
 
 
 class _IdentifierVariable(IntVariable):
+
     def parse_get(self, value, to_db):
         return Identifier(value)
 
@@ -98,6 +99,7 @@ class IdentifierCol(Int):
 
 
 class PriceVariable(DecimalVariable):
+
     def parse_set(self, value, from_db):
         # XXX: We cannot reduce the precision when converting to currency, since
         # sometimes we need a cost of a product to have more than 2 digits
@@ -109,6 +111,7 @@ class PriceCol(Decimal):
 
 
 class QuantityVariable(DecimalVariable):
+
     def parse_set(self, value, from_db):
         return decimal.Decimal('%0.*f' % (QUANTITY_PRECISION, value))
 
@@ -136,6 +139,7 @@ class EnumCol(SimpleProperty):
 
 
 class MyDateTimeVariable(DateTimeVariable, DateVariable):
+
     def parse_set(self, value, from_db):
         # We need to use type here because in py3 datetime is a subclass of
         # date, meaning that it would be considered too and loose its time
@@ -192,6 +196,15 @@ class XmlCol(SimpleProperty):
     variable_class = XmlVariable
 
 
+class DecimalEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        if isinstance(obj, decimal.Decimal):
+            return str(obj)
+
+        return json.JSONEncoder.default(self, obj)
+
+
 class JsonVariable(EncodedValueVariable):
 
     def _loads(self, value):
@@ -205,7 +218,7 @@ class JsonVariable(EncodedValueVariable):
             return None
 
         if isinstance(value, dict):
-            return json.dumps(value)
+            return json.dumps(value, cls=DecimalEncoder)
 
         return value
 
@@ -227,6 +240,30 @@ class BitStringCol(SimpleProperty):
     variable_class = BitStringVariable
 
 
+class PointVariable(EncodedValueVariable):
+
+    def _loads(self, value):
+        if isinstance(value, str):
+            value = value.strip('()')
+            return tuple(decimal.Decimal(coord) for coord in value.split(','))
+
+        return value
+
+    def _dumps(self, value):
+        if isinstance(value, tuple):
+            return '(%s)' % ', '.join(str(i) for i in value)
+
+        return value
+
+
+class PointCol(SimpleProperty):
+    variable_class = PointVariable
+
+
+class ListCol(List):
+    pass
+
+
 # Columns, we're keeping the Col suffix to avoid clashes between
 # decimal.Decimal and storm.properties.Decimal
 BLOBCol = RawStr
@@ -235,3 +272,4 @@ DecimalCol = Decimal
 IdCol = UUIDCol
 IntCol = Int
 UnicodeCol = Unicode
+TimeCol = Time

@@ -1,3 +1,99 @@
+stoq (5.0~rc3) xenial; urgency=medium
+
+  * Release 5.0~rc3
+
+ -- Vinícius M Camillo <vmcamillo@vmcamillo.lenovo-ideapad-320-15IKB>  Tue, 16 Jun 2020 11:27:48 -0300
+
+stoq (5.0~rc1) xenial; urgency=medium
+
+  * Release 5.0~rc1
+
+ -- Ronaldo Maia <romaia@async.com.br>  Mon, 18 May 2020 15:22:15 -0300
+
+stoq (4.9) xenial; urgency=medium
+
+  * Release 4.9
+
+ -- Fabricio C Zuardi <fcz@laptop40.localdomain>  Mon, 18 May 2020 09:34:25 -0300
+
+stoq (4.9~rc2) xenial; urgency=medium
+
+  * Release 4.9~rc2
+
+ -- Ronaldo Maia <romaia@async.com.br>  Thu, 14 May 2020 09:34:02 -0300
+
+stoq (4.9~rc1) xenial; urgency=medium
+
+  * Release 4.9~rc1
+
+ -- Ronaldo Maia <romaia@async.com.br>  Wed, 13 May 2020 10:18:49 -0300
+
+stoq (4.8~rc1) xenial; urgency=medium
+
+  * Release 4.8~rc1
+
+ -- Ronaldo Maia <romaia@async.com.br>  Sun, 19 Apr 2020 23:43:35 -0300
+
+stoq (4.7) xenial; urgency=medium
+
+  * Release 4.7
+
+ -- Fabricio C Zuardi <fcz@laptop40.localdomain>  Tue, 24 Mar 2020 08:44:10 -0300
+
+stoq (4.7~rc1) xenial; urgency=medium
+
+  * Release 4.7~rc1
+
+ -- Fabricio C Zuardi <fcz@laptop40.localdomain>  Tue, 17 Mar 2020 08:43:05 -0300
+
+stoq (4.6~rc1) xenial; urgency=medium
+
+  * Release 4.6~rc1
+
+ -- almada <almada@timon>  Wed, 19 Feb 2020 14:29:29 -0300
+
+stoq (4.5~rc2) xenial; urgency=medium
+
+  * Release 4.5~rc2
+
+ -- Fabricio C Zuardi <fcz@laptop40.localdomain>  Tue, 11 Feb 2020 13:34:52 -0300
+
+stoq (4.5~rc1) xenial; urgency=medium
+
+  * Release 4.5~rc1
+
+ -- Lucas Fonseca <lucasl2f@zazu>  Mon, 03 Feb 2020 15:02:42 -0300
+
+stoq (4.4~rc1) xenial; urgency=medium
+
+  * Release 4.4~rc1
+
+ -- vmcamillo <vmcamillo@vmcamillo-HP-260-G1-DM>  Mon, 16 Dec 2019 10:41:07 -0300
+
+stoq (4.3~rc1) xenial; urgency=medium
+
+  * Release 4.3~rc1
+
+ -- Fabricio C Zuardi <fcz@laptop39>  Tue, 19 Nov 2019 10:09:55 -0300
+
+stoq (4.2~rc1) xenial; urgency=medium
+
+  * Release 4.2~rc1
+
+ -- Fabricio C Zuardi <fcz@laptop39>  Wed, 06 Nov 2019 11:13:52 -0300
+
+stoq (4.1) xenial; urgency=medium
+
+  * Release 4.1
+
+ -- Fabricio C Zuardi <fcz@laptop39>  Mon, 14 Oct 2019 15:58:49 -0300
+
+stoq (4.1~rc1) xenial; urgency=medium
+
+  * Release 4.1~rc1
+
+ -- Fabricio C Zuardi <fcz@laptop39>  Tue, 08 Oct 2019 11:29:03 -0300
+
 stoq (4.0~rc1) xenial; urgency=medium
 
   * Release 4.0~rc1

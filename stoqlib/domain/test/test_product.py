@@ -47,6 +47,7 @@ from stoqlib.domain.purchase import PurchaseOrder
 from stoqlib.domain.sellable import Sellable
 from stoqlib.domain.test.domaintest import DomainTest
 from stoqlib.lib.dateutils import localtoday
+from stoqlib.domain.overrides import ProductBranchOverride
 
 """ This module test all class in stoqlib/domain/product.py """
 
@@ -218,6 +219,31 @@ class TestProduct(DomainTest):
             self.product.sellable.cost = 15
             self.assertEqual(inter_product.sellable.cost, 30)
             self.assertEqual(other_product.sellable.cost, 300)
+
+    def test_c_benef(self):
+        product = self.create_product()
+        product.c_benef = 'RJ111111'
+        self.assertEqual(product.c_benef, 'RJ111111')
+
+    def test_get_cbenef_default(self):
+        product = self.create_product()
+        product.c_benef = 'RJ111111'
+        self.assertEqual(product.get_cbenef(self.current_branch), product.c_benef)
+
+    def test_get_cbenef_override(self):
+        product = self.create_product()
+        product.c_benef = None
+        override = ProductBranchOverride(store=self.store, product=product,
+                                         branch=self.current_branch, c_benef='RJ222222')
+
+        self.assertEqual(product.get_cbenef(self.current_branch), override.c_benef)
+
+    def test_get_cbenef_override_without_cbenef(self):
+        product = self.create_product()
+        product.c_benef = 'RJ111111'
+        ProductBranchOverride(store=self.store, product=product,
+                              branch=self.current_branch, c_benef=None)
+        self.assertEqual(product.get_cbenef(self.current_branch), product.c_benef)
 
     def test_update_package_cost(self):
         """This will test if the product component cost is updated when the
@@ -454,7 +480,7 @@ class TestProduct(DomainTest):
         for child in product.children:
             self.assertTrue(child.sellable.status == Sellable.STATUS_AVAILABLE)
 
-        product.sellable.close()
+        product.sellable.close(self.current_branch)
         # Now the product and it's children should be closed
         self.assertTrue(product.sellable.status == Sellable.STATUS_CLOSED)
         for child in product.children:

@@ -433,6 +433,9 @@ class Sellable(Domain):
     #: full description of sellable
     description = UnicodeCol(default=u'')
 
+    #: short description of sellable
+    short_description = UnicodeCol(default=u'')
+
     #: maximum discount allowed
     max_discount = PercentCol(default=0)
 
@@ -535,6 +538,23 @@ class Sellable(Domain):
             cost = self.cost
         return currency(quantize(cost + (cost * (markup / currency(100)))))
 
+    def _get_from_override(self, attr, branch):
+        """Get an attribute from SellableBranchOverride
+
+        :param attr: a string with a sellable attribute name
+        :param branch: a branch
+
+        :returns: The value of an attribute from the sellable_branch_override
+        of a sellable, or the attribute from the actual sellable
+        """
+        override = SellableBranchOverride.find_by_sellable(sellable=self, branch=branch)
+        value = getattr(self, attr)
+        if override is None:
+            return value
+
+        override_value = getattr(override, attr)
+        return override_value if override_value is not None else value
+
     #
     # Properties
     #
@@ -578,15 +598,7 @@ class Sellable(Domain):
 
     @property
     def price(self):
-        if self.is_on_sale():
-            return self.on_sale_price
-        else:
-            category = sysparam.get_object(self.store, 'DEFAULT_TABLE_PRICE')
-            if category:
-                info = self.get_category_price_info(category)
-                if info:
-                    return info.price
-            return self.base_price
+        return self.get_price()
 
     @price.setter
     def price(self, price):
@@ -603,7 +615,24 @@ class Sellable(Domain):
     #  Accessors
     #
 
-    def is_available(self):
+    def _get_table_price(self, branch):
+        table_price = sysparam.get_object(self.store, 'DEFAULT_TABLE_PRICE')
+        if branch and branch.default_client_category:
+            table_price = branch.default_client_category
+        return table_price
+
+    def get_price(self, branch=None):
+        if self.is_on_sale():
+            return self.on_sale_price
+
+        category = self._get_table_price(branch)
+        if category:
+            info = self.get_category_price_info(category)
+            if info:
+                return info.price
+        return self.base_price
+
+    def is_available(self, branch):
         """Whether the sellable is available and can be sold.
 
         :returns: ``True`` if the item can be sold, ``False`` otherwise.
@@ -611,27 +640,29 @@ class Sellable(Domain):
         # FIXME: Perhaps this should be done elsewhere. Johan 2008-09-26
         if sysparam.compare_object('DELIVERY_SERVICE', self.service):
             return True
-        return self.status == self.STATUS_AVAILABLE
 
-    def set_available(self):
+        status = self._get_from_override('status', branch)
+        return status == self.STATUS_AVAILABLE
+
+    def set_available(self, branch):
         """Mark the sellable as available
 
         Being available means that it can be ordered or sold.
 
         :raises: :exc:`ValueError`: if the sellable is already available
         """
-        if self.is_available():
+        if self.is_available(branch):
             raise ValueError('This sellable is already available')
         self.status = self.STATUS_AVAILABLE
 
-    def is_closed(self):
+    def is_closed(self, branch):
         """Whether the sellable is closed or not.
 
         :returns: ``True`` if closed, ``False`` otherwise.
         """
-        return self.status == Sellable.STATUS_CLOSED
+        return not self.is_available(branch)
 
-    def close(self):
+    def close(self, branch):
         """Mark the sellable as closed.
 
         After the sellable is closed, this will call the close method of the
@@ -639,7 +670,7 @@ class Sellable(Domain):
 
         :raises: :exc:`ValueError`: if the sellable is already closed
         """
-        if self.is_closed():
+        if self.is_closed(branch):
             raise ValueError('This sellable is already closed')
 
         assert self.can_close()
@@ -756,15 +787,7 @@ class Sellable(Domain):
         :param branch: branch for checking if there is a sellable_branch_override
         :returns: Whether the sellable requires kitchen production for a given branch
         """
-        # Check for overrides before checking the actual sellable
-        sellable_override = SellableBranchOverride.find_by_sellable(
-            sellable=self,
-            branch=branch
-        )
-
-        if sellable_override and sellable_override.requires_kitchen_production is not None:
-            return sellable_override.requires_kitchen_production
-        return self.requires_kitchen_production
+        return self._get_from_override('requires_kitchen_production', branch)
 
     def check_code_exists(self, code):
         """Check if there is another sellable with the same code.

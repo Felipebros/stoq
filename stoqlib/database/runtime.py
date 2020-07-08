@@ -640,6 +640,13 @@ class StoqlibStore(Store):
 
         return commit
 
+    def is_link_server(self):
+        """Checks if the station which we are running on is a POS (it could be a server)
+
+        :param store: a store
+        """
+        return self.table_exists('sync')
+
     #
     #  Private
     #
@@ -780,6 +787,8 @@ def set_current_branch_station(store, station_name, confirm=True):
     # empty database
     if station.branch:
         provide_utility(ICurrentBranch, station.branch, replace=True)
+
+    return station
 
 
 @public(since="1.5.0")

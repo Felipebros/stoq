@@ -191,11 +191,18 @@ class BaseCOFINS(BaseTax):
 class ProductIcmsTemplate(BaseICMS):
     __storm_table__ = 'product_icms_template'
 
+    REASON_LIVESTOCK = 3
+    REASON_OTHERS = 9
+    REASON_AGRICULTURAL_AGENCY = 12
+
     product_tax_template_id = IdCol()
     product_tax_template = Reference(product_tax_template_id, 'ProductTaxTemplate.id')
 
     # Simples Nacional
     p_cred_sn_valid_until = DateTimeCol(default=None)
+
+    # Motivo de Desoneração do ICMS
+    mot_des_icms = IntCol(default=None)
 
     def is_p_cred_sn_valid(self):
         """Returns if p_cred_sn has expired."""
@@ -278,6 +285,7 @@ class ProductTaxTemplate(Domain):
 
 class InvoiceItemIcms(BaseICMS):
     __storm_table__ = 'invoice_item_icms'
+
     v_bc = PriceCol(default=None)
     v_icms = PriceCol(default=None)
 
@@ -297,6 +305,18 @@ class InvoiceItemIcms(BaseICMS):
 
     v_bc_st_ret = PriceCol(default=None)
     v_icms_st_ret = PriceCol(default=None)
+
+    # Valor da desoneração do ICMS
+    v_icms_deson = PriceCol(default=None)
+
+    def _calc_v_icms_deson(self, invoice_item):
+        item_icms = invoice_item.get_total() * self.p_icms / 100
+        desonerated_value = self.v_bc * self.p_icms / 100
+        v_icms_deson = item_icms - desonerated_value
+
+        # This information cannot be zero, and it must exists in certain
+        # webservices
+        self.v_icms_deson = max(v_icms_deson, Decimal('0.01'))
 
     def _calc_cred_icms_sn(self, invoice_item):
         if self.p_cred_sn >= 0:
@@ -353,16 +373,19 @@ class InvoiceItemIcms(BaseICMS):
 
         elif self.cst == 20:
             self._calc_normal(invoice_item)
+            self._calc_v_icms_deson(invoice_item)
 
         elif self.cst == 30:
             self.v_icms = 0
             self.v_bc = 0
 
             self._calc_st(invoice_item)
+            self._calc_v_icms_deson(invoice_item)
 
         elif self.cst in (40, 41, 50):
             self.v_icms = 0
             self.v_bc = 0
+            self._calc_v_icms_deson(invoice_item)
 
         elif self.cst == 51:
             self._calc_normal(invoice_item)
@@ -377,6 +400,7 @@ class InvoiceItemIcms(BaseICMS):
         elif self.cst in (70, 90):
             self._calc_normal(invoice_item)
             self._calc_st(invoice_item)
+            self._calc_v_icms_deson(invoice_item)
 
     def _update_simples(self, invoice_item):
         if self.csosn in [300, 400, 500]:
