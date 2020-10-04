@@ -691,15 +691,17 @@ class Product(Domain):
                     ProductSupplierInfo.supplier == supplier)
         return self.store.find(ProductSupplierInfo.supplier_code, query).one()
 
-    def get_product_supplier_info(self, supplier):
+    def get_product_supplier_info(self, supplier, branch):
         """Returns the product information for the specified supplier.
 
         :param supplier: the |supplier|
+        :param branch: the |branch|
         :returns: The supplier's product information
         :rtype: :class:'ProductSupplierInfo'
         """
         query = And(ProductSupplierInfo.product == self,
-                    ProductSupplierInfo.supplier == supplier)
+                    ProductSupplierInfo.supplier == supplier,
+                    ProductSupplierInfo.branch == branch)
         return self.store.find(ProductSupplierInfo, query).one()
 
     def get_components(self):
@@ -931,7 +933,7 @@ class Product(Domain):
 
         # Since other classes can propagate this event (like Sellable),
         # emit the event only once for each store.
-        if not store in emitted_store_list:
+        if store not in emitted_store_list:
             ProductEditEvent.emit(self)
             emitted_store_list.add(store)
 

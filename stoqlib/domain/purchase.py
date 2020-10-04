@@ -29,7 +29,7 @@ import collections
 from decimal import Decimal
 
 from kiwi.currency import currency
-from kiwi.python import Settable
+from stoqlib.lib.objutils import Settable
 from storm.expr import (Alias, And, Cast, Coalesce, Count, Eq, Join, LeftJoin,
                         Select, Sum, Min)
 from storm.info import ClassAlias
@@ -541,7 +541,8 @@ class PurchaseOrder(IdentifiableDomain):
             # a xml from stoqlink, and the cost will be always without ipi
             item.sellable.cost = item.cost + item.unit_ipi_value
             product = item.sellable.product
-            product_supplier = product.get_product_supplier_info(self.supplier)
+            product_supplier = product.get_product_supplier_info(self.supplier,
+                                                                 self.branch)
             product_supplier.base_cost = item.cost + item.unit_ipi_value
 
     @property

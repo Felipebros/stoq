@@ -25,7 +25,7 @@
 import contextlib
 from gi.repository import Gtk
 import mock
-from kiwi.python import Settable
+from stoqlib.lib.objutils import Settable
 
 from stoqlib.database.runtime import StoqlibStore
 from stoqlib.database.viewable import Viewable
@@ -33,13 +33,13 @@ from stoqlib.domain.person import Person
 from stoqlib.domain.purchase import PurchaseOrder
 from stoqlib.domain.sale import Sale
 from stoqlib.domain.workorder import WorkOrderCategory, WorkOrder
-from stoqlib.gui.base.dialogs import run_dialog
-from stoqlib.gui.editors.personeditor import ClientEditor
-from stoqlib.gui.editors.producteditor import ProductEditor
-from stoqlib.gui.editors.workordereditor import WorkOrderEditor
-from stoqlib.gui.events import PrintReportEvent
-from stoqlib.gui.wizards.personwizard import PersonRoleWizard
-from stoqlib.gui.wizards.workorderquotewizard import WorkOrderQuoteWizard
+from stoq.lib.gui.base.dialogs import run_dialog
+from stoq.lib.gui.editors.personeditor import ClientEditor
+from stoq.lib.gui.editors.producteditor import ProductEditor
+from stoq.lib.gui.editors.workordereditor import WorkOrderEditor
+from stoq.lib.gui.events import PrintReportEvent
+from stoq.lib.gui.wizards.personwizard import PersonRoleWizard
+from stoq.lib.gui.wizards.workorderquotewizard import WorkOrderQuoteWizard
 from stoqlib.lib.dateutils import localdate
 from stoqlib.lib.parameters import sysparam
 from stoqlib.reporting.sale import SaleOrderReport
@@ -61,6 +61,10 @@ __tests__ = 'plugins.optical.opticalui.py'
 
 
 class TestOpticalUI(BaseGUITest, OpticalDomainTest):
+    def setUp(self):
+        super().setUp()
+        self.ui._setup_params()
+
     @classmethod
     def setUpClass(cls):
         cls.ui = OpticalUI.get_instance()
@@ -162,7 +166,7 @@ class TestOpticalUI(BaseGUITest, OpticalDomainTest):
         workorder.category = wo_category
         workorder.sale = sale
 
-        name = 'stoqlib.gui.base.dialogs.run_dialog_internal'
+        name = 'stoq.lib.gui.base.dialogs.run_dialog_internal'
         with mock.patch(name) as run_dialog_internal:
             # Without a Sale that has workorders -> optical wizard
             run_dialog(WorkOrderQuoteWizard, None, self.store, sale)
@@ -176,13 +180,14 @@ class TestOpticalUI(BaseGUITest, OpticalDomainTest):
             self.assertTrue(isinstance(args[0], WorkOrderQuoteWizard))
 
     def test_run_medic_role_wizard(self):
-        name = 'stoqlib.gui.base.dialogs.run_dialog_internal'
+        name = 'stoq.lib.gui.base.dialogs.run_dialog_internal'
         with mock.patch(name) as run_dialog_internal:
             run_dialog(PersonRoleWizard, None, self.store, MedicEditor)
             args, kwargs = run_dialog_internal.call_args
             self.assertTrue(isinstance(args[0], MedicRoleWizard))
 
     def test_person_editor(self):
+        sysparam.__init__()
         client = self.create_client()
         editor = ClientEditor(self.store, client, role_type=Person.ROLE_INDIVIDUAL)
         self.check_editor(editor, 'editor-client-optical-plugin')
@@ -192,8 +197,8 @@ class TestOpticalUI(BaseGUITest, OpticalDomainTest):
             run_dialog_.assert_called_once_with(OpticalPatientDetails, editor, self.store, client)
 
     def test_product_search(self):
-        from stoqlib.gui.search.productsearch import ProductSearch
-        from stoqlib.gui.search.costcentersearch import CostCenterSearch
+        from stoq.lib.gui.search.productsearch import ProductSearch
+        from stoq.lib.gui.search.costcentersearch import CostCenterSearch
         # ProductSearch should have new columns
         search = ProductSearch(self.store)
         search.search.refresh()

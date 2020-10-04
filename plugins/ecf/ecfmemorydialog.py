@@ -25,9 +25,9 @@
 import datetime
 
 from kiwi.datatypes import ValidationError
-from kiwi.python import Settable
+from stoqlib.lib.objutils import Settable
 
-from stoqlib.gui.editors.baseeditor import BaseEditor
+from stoq.lib.gui.editors.baseeditor import BaseEditor
 from stoqlib.lib.translation import stoqlib_gettext
 
 _ = stoqlib_gettext

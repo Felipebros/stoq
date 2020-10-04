@@ -23,9 +23,8 @@
 import os
 import platform
 
-from gi.repository import GdkPixbuf
+import pkg_resources
 from kiwi.accessor import kgetattr
-from kiwi.environ import environ
 
 from stoqlib.database.runtime import get_default_store
 from stoqlib.lib.template import render_template
@@ -82,7 +81,7 @@ class HTMLReport(object):
     def render(self, stylesheet=None):
         import weasyprint
 
-        template_dir = environ.get_resource_filename('stoq', 'template')
+        template_dir = pkg_resources.resource_filename('stoq', 'template')
         if platform.system() == 'Windows':
             # FIXME: Figure out why this is breaking
             # On windows, weasyprint is eating the last directory of the path
@@ -247,7 +246,7 @@ class ObjectListReport(TableReport):
         TableReport.__init__(self, filename, data, *args, **kwargs)
 
     def get_columns(self):
-        from gi.repository import Gtk
+        from gi.repository import GdkPixbuf, Gtk
         alignments = {
             Gtk.Justification.LEFT: 'left',
             Gtk.Justification.RIGHT: 'right',

@@ -31,7 +31,7 @@ having to import their symbols.
 import operator
 import sys
 
-from kiwi.component import get_utility
+from stoqlib.lib.component import get_utility
 
 from stoqlib.database.runtime import (new_store,
                                       get_default_store)
@@ -39,7 +39,7 @@ from stoqlib.database.runtime import (get_current_branch,
                                       get_current_station, get_current_user)
 from stoqlib.database.settings import db_settings
 from stoqlib.domain.person import Branch
-from stoqlib.gui.events import CanSeeAllBranches
+from stoq.lib.gui.events import CanSeeAllBranches
 from stoqlib.lib.devicemanager import DeviceManager
 from stoqlib.lib.environment import is_developer_mode
 from stoqlib.lib.interfaces import IStoqConfig

@@ -30,11 +30,11 @@ import inspect
 import os
 
 from kiwi.dist import listpackages
-from kiwi.python import namedAny
 from zope.interface import implementedBy
 from zope.interface.interface import InterfaceClass
 
 import stoqlib
+from stoqlib.lib.importutils import import_from_string
 
 
 def get_all_classes(root, basedir=None):
@@ -58,12 +58,12 @@ def get_all_classes(root, basedir=None):
         # List all python files in stoqlib/domain
         for filename in glob.glob(os.path.join(package, '*.py')):
             # Avoid tests.
-            if 'test/' in filename:
+            if 'pytests/' in filename or 'test/' in filename:
                 continue
 
             # stoqlib/domain/base.py -> stoqlib.domain.base
             modulename = filename[:-3].replace(os.path.sep, '.')
-            module = namedAny(modulename)
+            module = import_from_string(modulename)
             for unused, klass in inspect.getmembers(module, inspect.isclass):
                 yield klass
 

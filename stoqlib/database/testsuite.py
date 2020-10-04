@@ -33,7 +33,7 @@ library  # pylint: disable=W0104
 import logging
 import os
 
-from kiwi.component import provide_utility, utilities
+from stoqlib.lib.component import provide_utility, utilities
 from storm.expr import And
 from storm.tracer import install_tracer, remove_tracer_type
 
@@ -206,8 +206,8 @@ def provide_database_settings(dbname=None, address=None, port=None, username=Non
 
 
 def _provide_domain_slave_mapper():
-    from stoqlib.gui.interfaces import IDomainSlaveMapper
-    from stoqlib.gui.slaves.domainslavemapper import DefaultDomainSlaveMapper
+    from stoq.lib.gui.interfaces import IDomainSlaveMapper
+    from stoq.lib.gui.slaves.domainslavemapper import DefaultDomainSlaveMapper
     provide_utility(IDomainSlaveMapper, DefaultDomainSlaveMapper(),
                     replace=True)
 

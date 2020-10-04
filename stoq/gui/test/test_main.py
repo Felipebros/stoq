@@ -25,7 +25,7 @@
 import unittest
 
 import mock
-from kiwi.component import remove_utility, get_utility, provide_utility
+from stoqlib.lib.component import remove_utility, get_utility, provide_utility
 from kiwi.ui.widgets.label import ProxyLabel
 from stoqlib.lib.interfaces import IAppInfo
 from stoqlib.lib.settings import get_settings
@@ -47,7 +47,7 @@ class TestMain(unittest.TestCase):
         self._mocks.append(mocked)
 
         # Do not show the splash screen during the tests
-        mocked = mock.patch('stoqlib.gui.widgets.splash.show_splash',
+        mocked = mock.patch('stoq.lib.gui.widgets.splash.show_splash',
                             new=lambda: None)
         self._mocks.append(mocked)
 

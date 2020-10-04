@@ -73,6 +73,14 @@ lib Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`component` Module
+------------------------
+
+.. automodule:: stoqlib.lib.component
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`configparser` Module
 --------------------------
 
@@ -209,6 +217,14 @@ lib Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`importutils` Module
+------------------------
+
+.. automodule:: stoqlib.lib.interfaces
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`interfaces` Module
 ------------------------
 
@@ -261,6 +277,14 @@ lib Package
 ---------------------
 
 .. automodule:: stoqlib.lib.message
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`objutils` Module
+---------------------
+
+.. automodule:: stoqlib.lib.osutils
     :members:
     :undoc-members:
     :show-inheritance:
@@ -357,22 +381,6 @@ lib Package
 ----------------------
 
 .. automodule:: stoqlib.lib.sintegra
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`sintegragenerator` Module
--------------------------------
-
-.. automodule:: stoqlib.lib.sintegragenerator
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`status` Module
---------------------
-
-.. automodule:: stoqlib.lib.status
     :members:
     :undoc-members:
     :show-inheritance:

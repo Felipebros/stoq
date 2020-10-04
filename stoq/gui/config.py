@@ -49,9 +49,9 @@ import subprocess
 import sys
 
 from gi.repository import Gtk, GLib, Gdk
-from kiwi.component import provide_utility, get_utility
+from stoqlib.lib.component import provide_utility, get_utility
 from kiwi.datatypes import ValidationError
-from kiwi.python import Settable
+from stoqlib.lib.objutils import Settable
 from kiwi.ui.delegates import GladeSlaveDelegate
 
 from stoqlib.api import api
@@ -68,12 +68,11 @@ from stoqlib.domain.person import LoginUser
 from stoqlib.domain.station import BranchStation
 from stoqlib.domain.system import SystemTable
 from stoqlib.exceptions import DatabaseError
-from stoqlib.gui.base.dialogs import run_dialog
-from stoqlib.gui.base.wizards import (BaseWizard, WizardEditorStep,
-                                      WizardStep)
-from stoqlib.gui.slaves.userslave import PasswordEditorSlave
-from stoqlib.gui.utils.openbrowser import open_browser
-from stoqlib.gui.widgets.processview import ProcessView
+from stoq.lib.gui.base.dialogs import run_dialog
+from stoq.lib.gui.base.wizards import BaseWizard, WizardEditorStep, WizardStep
+from stoq.lib.gui.slaves.userslave import PasswordEditorSlave
+from stoq.lib.gui.utils.openbrowser import open_browser
+from stoq.lib.gui.widgets.processview import ProcessView
 from stoqlib.lib.configparser import StoqConfig
 from stoqlib.lib.interfaces import ICookieFile
 from stoqlib.lib.kiwilibrary import library
